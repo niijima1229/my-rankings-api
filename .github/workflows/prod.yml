@@ -37,7 +37,7 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{ env.SERVICE_NAME }}-web
-          DOCKER_FILE: ./docker/nginx/Dockerfile.prod
+          DOCKER_FILE: ./docker/web/Dockerfile.prod
         run: |
           docker build -t ${ECR_REPOSITORY} . -f ${DOCKER_FILE}
           docker tag ${ECR_REPOSITORY}:latest ${ECR_REGISTRY}/${ECR_REPOSITORY}:latest
@@ -48,7 +48,7 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{ env.SERVICE_NAME }}-app
-          DOCKER_FILE: ./docker/php/Dockerfile.prod
+          DOCKER_FILE: ./docker/app/Dockerfile.prod
         run: |
           docker build -t ${ECR_REPOSITORY} . -f ${DOCKER_FILE} --build-arg ENV=${{ env.ENV_NAME }}
           docker tag ${ECR_REPOSITORY}:latest ${ECR_REGISTRY}/${ECR_REPOSITORY}:latest
