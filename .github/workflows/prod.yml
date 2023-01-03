@@ -1,0 +1,84 @@
+name: Deploy Prod
+on:
+  push:
+    branches:
+      - main
+env:
+  SERVICE_NAME: my-rankings
+  ENV_NAME: prod
+  ROLE_TO_ASSUME: arn:aws:iam::196189526378:role/my-rankings-github-actions
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ env.ROLE_TO_ASSUME }}
+          role-session-name: github-actions-${{ github.run_id }}
+          aws-region: ap-northeast-1
+
+      - name: Get AWS Account
+        run: aws sts get-caller-identity
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build Web
+        id: build-web
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ env.SERVICE_NAME }}-web
+          DOCKER_FILE: ./docker/nginx/Dockerfile.prod
+        run: |
+          docker build -t ${ECR_REPOSITORY} . -f ${DOCKER_FILE}
+          docker tag ${ECR_REPOSITORY}:latest ${ECR_REGISTRY}/${ECR_REPOSITORY}:latest
+          docker push ${ECR_REGISTRY}/${ECR_REPOSITORY}:latest
+          echo "::set-output name=image::${ECR_REGISTRY}/${ECR_REPOSITORY}:latest"
+      - name: Build App
+        id: build-app
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ env.SERVICE_NAME }}-app
+          DOCKER_FILE: ./docker/php/Dockerfile.prod
+        run: |
+          docker build -t ${ECR_REPOSITORY} . -f ${DOCKER_FILE} --build-arg ENV=${{ env.ENV_NAME }}
+          docker tag ${ECR_REPOSITORY}:latest ${ECR_REGISTRY}/${ECR_REPOSITORY}:latest
+          docker push ${ECR_REGISTRY}/${ECR_REPOSITORY}:latest
+          echo "::set-output name=image::${ECR_REGISTRY}/${ECR_REPOSITORY}:latest"
+      - name: Get ECS Task Definition
+        id: create-taskdef
+        run: |
+          aws ecs describe-task-definition --task-definition ${{ env.SERVICE_NAME }} | jq ".taskDefinition" | jq "del(.compatibilities)" | jq "del(.taskDefinitionArn)" | jq "del(.requiresAttributes)" | jq "del(.revision)" | jq "del(.status)" > ./task_definition.json
+          cat ./task_definition.json
+      - name: Fill in the new image ID Web
+        id: task-def-web
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ./task_definition.json
+          container-name: ${{ env.SERVICE_NAME }}-web
+          image: ${{ steps.build-web.outputs.image }}
+
+      - name: Fill in the new image ID App
+        id: task-def-app
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def-web.outputs.task-definition }}
+          container-name: ${{ env.SERVICE_NAME }}-app
+          image: ${{ steps.build-app.outputs.image }}
+
+      - name: Deploy Amazon ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def-app.outputs.task-definition }}
+          service: ${{ env.SERVICE_NAME }}
+          cluster: ${{ env.SERVICE_NAME }}
+          wait-for-service-stability: true
