@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Http\Requests\LoginRequest;
+use App\Http\Requests\RegisterRequest;
 use Symfony\Component\HttpFoundation\Response;
 
 class AuthController extends Controller
@@ -16,7 +17,6 @@ class AuthController extends Controller
 	public function login(LoginRequest $request): JsonResponse
 	{
 		$credentials = $request->safe()->only('email', 'password');
-
 		$token = Auth::attempt($credentials);
 		if (!$token) {
 			return response()->json([
@@ -36,18 +36,12 @@ class AuthController extends Controller
 		], Response::HTTP_OK);
 	}
 
-	public function register(Request $request)
+	public function register(RegisterRequest $request)
 	{
-		$request->validate([
-			'name' => 'required|string|max:255',
-			'email' => 'required|string|email|max:255|unique:users',
-			'password' => 'required|string|min:6',
-		]);
-
 		$user = User::create([
-			'name' => $request->name,
-			'email' => $request->email,
-			'password' => Hash::make($request->password),
+			'name' => $request->safe()->name,
+			'email' => $request->safe()->email,
+			'password' => Hash::make($request->safe()->password),
 		]);
 
 		$token = Auth::login($user);
@@ -59,7 +53,7 @@ class AuthController extends Controller
 				'token' => $token,
 				'type' => 'bearer',
 			]
-		]);
+		], Response::HTTP_OK);
 	}
 
 	public function logout()
