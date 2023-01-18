@@ -3,27 +3,26 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use App\Http\Requests\LoginRequest;
+use Symfony\Component\HttpFoundation\Response;
 
 class AuthController extends Controller
 {
 
-	public function login(Request $request)
+	public function login(LoginRequest $request): JsonResponse
 	{
-		$request->validate([
-			'email' => 'required|string|email',
-			'password' => 'required|string',
-		]);
-		$credentials = $request->only('email', 'password');
+		$credentials = $request->safe()->only('email', 'password');
 
 		$token = Auth::attempt($credentials);
 		if (!$token) {
 			return response()->json([
 				'status' => 'error',
 				'message' => 'Unauthorized',
-			], 401);
+			], Response::HTTP_UNAUTHORIZED);
 		}
 
 		$user = Auth::user();
@@ -34,7 +33,7 @@ class AuthController extends Controller
 				'token' => $token,
 				'type' => 'bearer',
 			]
-		], 200);
+		], Response::HTTP_OK);
 	}
 
 	public function register(Request $request)
