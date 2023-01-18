@@ -36,7 +36,7 @@ class AuthController extends Controller
 		], Response::HTTP_OK);
 	}
 
-	public function register(RegisterRequest $request)
+	public function register(RegisterRequest $request): JsonResponse
 	{
 		$user = User::create([
 			'name' => $request->safe()->name,
