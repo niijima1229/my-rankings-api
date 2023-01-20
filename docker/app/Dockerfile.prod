@@ -23,5 +23,4 @@ COPY ./web /var/www/
 RUN cd /var/www/ \
 	&& composer install \
 	&& chmod -R 777 /var/www/storage \
-	&& chmod -R 777 /var/www/vendor/ankitpokhrel \
 	&& cp .env.prod .env
