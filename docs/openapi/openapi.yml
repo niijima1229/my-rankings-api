@@ -5,7 +5,7 @@ info:
   version: 1.0.0
 
 servers:
-  - url: 'http://localhost:80'
+  - url: 'http://localhost:4010'
     description: 'API サーバー'
 paths:
   /users:
@@ -85,12 +85,41 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Ranking"
-              examples:
-                example1:
-                  value:
-                    - id: 1
-                      user: { id: 1, name: John Doe }
-                      title: Hogeランキング
+              example:
+                  - id: 1
+                    user: { id: 1, name: John Doe }
+                    title: Hogeランキング
+                    createdAt: '2022-12-29'
+                    rankingItems:
+                      - id: 1
+                        name: 富士山
+                        rank: 1
+                        score: 100
+                      - id: 2
+                        name: 北岳
+                        rank: 2
+                        score: 90
+                      - id: 3
+                        name: 穂高岳
+                        rank: 3
+                        score: 80
+                  - id: 2
+                    user: { id: 2, name: Jane Doe }
+                    title: Hugaランキング
+                    createdAt: '2022-12-31'
+                    rankingItems:
+                      - id: 1
+                        name: 富士山
+                        rank: 1
+                        score: 100
+                      - id: 2
+                        name: 北岳
+                        rank: 2
+                        score: 90
+                      - id: 3
+                        name: 穂高岳
+                        rank: 3
+                        score: 80
         default:
           description: unexpected error
           content:
@@ -131,12 +160,24 @@ paths:
                 type: object
                 items:
                   $ref: "#/components/schemas/Ranking"
-              examples:
-                example:
-                  value:
-                      id: 1
-                      user: { id: 1, name: John Doe }
-                      title: Hogeランキング
+              example:
+                id: 1
+                user: { id: 1, name: John Doe }
+                title: Hogeランキング
+                createdAt: '2022-12-29'
+                rankingItems:
+                - id: 1
+                  name: 富士山
+                  rank: 1
+                  score: 100
+                - id: 2
+                  name: 北岳
+                  rank: 2
+                  score: 90
+                - id: 3
+                  name: 穂高岳
+                  rank: 3
+                  score: 80
         default:
           description: unexpected error
           content:
@@ -184,6 +225,7 @@ paths:
                   - id: 1
                     user: { id: 1, name: John Doe }
                     title: Hogeランキング
+                    createdAt: '2022-12-29'
                     rankingItems:
                       - id: 1
                         name: 富士山
@@ -222,6 +264,7 @@ paths:
                   - id: 1
                     user: { id: 1, name: John Doe }
                     title: Hogeランキング
+                    createdAt: '2022-12-29'
                     rankingItems:
                       - id: 1
                         name: 富士山
@@ -325,14 +368,17 @@ components:
         deadline:
           type: string
           example: '2023-12-29'
+        createdAt:
+          type: string
+          example: '2022-12-29'
     RankingForAdmin:
       description: 審査員、管理者には必要なランキングの情報
       type: object
       properties:
-        score_maximum:
+        scoreMaximum:
           type: integer
           example: 100
-        judge_comments:
+        judgeComments:
           type: array
           items:
             $ref: "#/components/schemas/JudgeComment"
