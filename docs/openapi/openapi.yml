@@ -89,7 +89,7 @@ paths:
                   - id: 1
                     user: { id: 1, name: John Doe }
                     title: Hogeランキング
-                    createdAt: '2022-12-29'
+                    createdAt: '2023-01-14 12:00:22'
                     rankingItems:
                       - id: 1
                         name: 富士山
@@ -106,7 +106,7 @@ paths:
                   - id: 2
                     user: { id: 2, name: Jane Doe }
                     title: Hugaランキング
-                    createdAt: '2022-12-31'
+                    createdAt: '2023-01-17 12:00:22'
                     rankingItems:
                       - id: 1
                         name: 富士山
@@ -164,7 +164,7 @@ paths:
                 id: 1
                 user: { id: 1, name: John Doe }
                 title: Hogeランキング
-                createdAt: '2022-12-29'
+                createdAt: '2023-01-14 12:00:22'
                 rankingItems:
                 - id: 1
                   name: 富士山
@@ -225,7 +225,7 @@ paths:
                   - id: 1
                     user: { id: 1, name: John Doe }
                     title: Hogeランキング
-                    createdAt: '2022-12-29'
+                    createdAt: '2023-01-14 12:00:22'
                     rankingItems:
                       - id: 1
                         name: 富士山
@@ -264,7 +264,7 @@ paths:
                   - id: 1
                     user: { id: 1, name: John Doe }
                     title: Hogeランキング
-                    createdAt: '2022-12-29'
+                    createdAt: '2023-01-14 12:00:22'
                     rankingItems:
                       - id: 1
                         name: 富士山
@@ -370,7 +370,7 @@ components:
           example: '2023-12-29'
         createdAt:
           type: string
-          example: '2022-12-29'
+          example: '2023-01-14 12:00:22'
     RankingForAdmin:
       description: 審査員、管理者には必要なランキングの情報
       type: object
