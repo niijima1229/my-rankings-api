@@ -3,7 +3,7 @@
 namespace App\Http\Middleware;
 
 use Illuminate\Auth\Middleware\Authenticate as Middleware;
-use App\Providers\RouteServiceProvider;
+use Symfony\Component\HttpFoundation\Response;
 
 class Authenticate extends Middleware
 {
@@ -16,7 +16,10 @@ class Authenticate extends Middleware
 	protected function redirectTo($request)
 	{
 		if (!$request->expectsJson()) {
-			return RouteServiceProvider::HOME;
+			return response()->json([
+				'status' => 'error',
+				'message' => 'Unauthorized',
+			], Response::HTTP_UNAUTHORIZED);
 		}
 	}
 }
