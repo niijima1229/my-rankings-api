@@ -10,4 +10,5 @@ Route::post('register', [AuthController::class, 'register'])->name('register');
 Route::middleware('auth')->controller(AuthController::class)->group(function () {
 	Route::post('logout', 'logout')->name('logout');
 	Route::post('refresh', 'refresh')->name('refresh');
+	Route::post('is-auth', 'isAuth')->name('isAuth');
 });

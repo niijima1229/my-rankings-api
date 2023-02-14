@@ -86,4 +86,11 @@ class AuthController extends Controller
 			]
 		]);
 	}
+
+	public function isAuth()
+	{
+		return response()->json([
+			'message' => 'success'
+		]);
+	}
 }
