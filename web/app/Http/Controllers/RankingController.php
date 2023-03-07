@@ -14,7 +14,7 @@ class RankingController extends Controller
 {
     public function index(): JsonResponse
 	{
-		$rankings = Ranking::with(['ranking_items' => function ($query) {
+		$rankings = Ranking::with(['user'])->with(['rankingItems' => function ($query) {
 			$query->orderBy('rank', 'asc');
 		}])->orderBy('created_at', 'desc')->orderBy('id', 'desc')->get();
 
@@ -27,7 +27,7 @@ class RankingController extends Controller
 
 	public function myRankings(): JsonResponse
 	{
-		$rankings = Ranking::where('user_id', Auth::id())->with(['ranking_items' => function ($query) {
+		$rankings = Ranking::where('user_id', Auth::id())->with(['user'])->with(['rankingItems' => function ($query) {
 			$query->orderBy('rank', 'asc');
 		}])->orderBy('created_at', 'desc')->orderBy('id', 'desc')->get();
 
@@ -40,12 +40,13 @@ class RankingController extends Controller
 
 	public function store(Request $request): JsonResponse
 	{
+		// TODO: トランザクションを貼ってRankingItemで失敗したらrollback
 		$ranking = Ranking::create([
 			'title' => $request->title,
 			'user_id' => Auth::id()
 		]);
 
-		foreach($request->rankingItems as $index =>$rankingItem) {
+		foreach($request->ranking_items as $index =>$rankingItem) {
 			// indexは0から始まるが、ランキングは１位から始まる
 			RankingItem::create([
 				'ranking_id' => $ranking->id,
