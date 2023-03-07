@@ -6,7 +6,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
 
 class RankingTest extends TestCase
 {
@@ -20,26 +19,17 @@ class RankingTest extends TestCase
 	public function test_create_ranking()
 	{
 		$this->seed();
-		$user = User::factory()->make();
-		$email = $user->email;
-		$password = $user->password;
-
-		$credentials = [
-			'email' => $email,
-			'password' => $password,
-		];
-
-		$token = Auth::attempt($credentials);
+		$user = User::factory()->create();
 
 		$data = [
 			'title' => $this->faker->sentence,
-			'rankingItem' => [
+			'rankingItems' => [
 				$this->faker->sentence,
 				$this->faker->sentence,
 				$this->faker->sentence,
 			]
 		];
-		$response = $this->post('/api/ranking/create', $data);
+		$response = $this->actingAs($user)->post('/api/rankings/create', $data);
 
 		$response->assertStatus(200);
 	}

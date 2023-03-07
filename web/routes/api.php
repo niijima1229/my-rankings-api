@@ -7,9 +7,10 @@ use App\Http\Controllers\RankingController;
 
 
 Route::prefix('rankings')->controller(RankingController::class)->group(function() {
-	Route::get('/', 'index');
+	Route::get('/', 'index')->name('rankings');
 	Route::middleware('auth')->group(function() {
-		Route::get('/my-rankings', 'myRankings');
+		Route::get('/my-rankings', 'myRankings')->name('myRankings');
+		Route::post('/create', 'store')->name('storeRanking');
 	});
 });
 
