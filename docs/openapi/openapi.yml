@@ -5,8 +5,8 @@ info:
   version: 1.0.0
 
 servers:
-  - url: 'http://localhost:80'
-    description: 'API サーバー'
+  - url: "http://localhost:4010"
+    description: "API サーバー"
 paths:
   /users:
     post:
@@ -15,16 +15,16 @@ paths:
       description: 単体のユーザーを登録
       operationId: CreateUser
       responses:
-        '200':
+        "200":
           description: ユーザー情報取得成功
   /users/{id}:
     get:
-      tags: 
+      tags:
         - users
       description: 単体のユーザーの情報を取得
       operationId: GetUser
       parameters:
-        - $ref: '#/components/parameters/UserId'
+        - $ref: "#/components/parameters/UserId"
       responses:
         "200":
           description: ユーザー情報取得成功
@@ -34,12 +34,12 @@ paths:
                 type: object
                 items:
                   $ref: "#/components/schemas/User"
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '404':
-          $ref: '#/components/responses/NotFound'
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "404":
+          $ref: "#/components/responses/NotFound"
         "500":
-          $ref: '#/components/responses/InternalServerError'
+          $ref: "#/components/responses/InternalServerError"
         default:
           description: unexpected error
           content:
@@ -47,37 +47,37 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
     put:
-      tags: 
+      tags:
         - users
       description: ユーザー情報1件更新
       operationId: UpdateUser
       parameters:
-        - $ref: '#/components/parameters/UserId'
+        - $ref: "#/components/parameters/UserId"
       requestBody:
-        $ref: '#/components/requestBodies/UpdateUserBody'
+        $ref: "#/components/requestBodies/UpdateUserBody"
       responses:
-        '200':
+        "200":
           description: ユーザー情報更新成功
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+                $ref: "#/components/schemas/User"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
   /rankings:
     get:
-      tags: 
+      tags:
         - rankings
       description: 全てのランキングを取得
       operationId: GetRankings
       responses:
-        '200':
+        "200":
           description: ランキング情報取得成功
           content:
             application/json:
@@ -85,30 +85,80 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Ranking"
-              examples:
-                example1:
-                  value:
+              example:
+                - id: 1
+                  user: { id: 1, name: John Doe }
+                  title: Hogeランキング
+                  createdAt: "2023-01-14 12:00:22"
+                  rankingItems:
                     - id: 1
-                      user: { id: 1, name: John Doe }
-                      title: Hogeランキング
+                      name: 富士山
+                      rank: 1
+                      score: 100
+                    - id: 2
+                      name: 北岳
+                      rank: 2
+                      score: 90
+                    - id: 3
+                      name: 穂高岳
+                      rank: 3
+                      score: 80
+                - id: 2
+                  user: { id: 2, name: Jane Doe }
+                  title: Hugaランキング
+                  createdAt: "2023-01-17 12:00:22"
+                  rankingItems:
+                    - id: 1
+                      name: 富士山
+                      rank: 1
+                      score: 100
+                    - id: 2
+                      name: 北岳
+                      rank: 2
+                      score: 90
+                    - id: 3
+                      name: 穂高岳
+                      rank: 3
+                      score: 80
         default:
           description: unexpected error
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /rankings/create:
     post:
       tags:
         - rankings
       description: ランキングを１件作成
       operationId: CreateRanking
       responses:
-        '200':
+        "200":
           description: ランキング情報登録成功
           content:
             application/json:
               schema:
                 type: object
+                items:
+                  $ref: "#/components/schemas/Ranking"
+              example:
+                id: 1
+                user: { id: 1, name: John Doe }
+                title: Hogeランキング
+                createdAt: "2023-01-14 12:00:22"
+                rankingItems:
+                  - id: 1
+                    name: 富士山
+                    rank: 1
+                    score: 100
+                  - id: 2
+                    name: 北岳
+                    rank: 2
+                    score: 90
+                  - id: 3
+                    name: 穂高岳
+                    rank: 3
+                    score: 80
   /rankings/{id}:
     get:
       tags:
@@ -116,14 +166,14 @@ paths:
       description: ランキングを１件取得
       operationId: GetRanking
       parameters:
-        - name: rankingId
+        - name: id
           in: path
           description: ranking id
           required: true
           schema:
             type: integer
       responses:
-        '200':
+        "200":
           description: ランキング情報取得成功
           content:
             application/json:
@@ -131,12 +181,24 @@ paths:
                 type: object
                 items:
                   $ref: "#/components/schemas/Ranking"
-              examples:
-                example:
-                  value:
-                      id: 1
-                      user: { id: 1, name: John Doe }
-                      title: Hogeランキング
+              example:
+                id: 1
+                user: { id: 1, name: John Doe }
+                title: Hogeランキング
+                createdAt: "2023-01-14 12:00:22"
+                rankingItems:
+                  - id: 1
+                    name: 富士山
+                    rank: 1
+                    score: 100
+                  - id: 2
+                    name: 北岳
+                    rank: 2
+                    score: 90
+                  - id: 3
+                    name: 穂高岳
+                    rank: 3
+                    score: 80
         default:
           description: unexpected error
           content:
@@ -145,7 +207,7 @@ paths:
                 $ref: "#/components/schemas/Error"
   /rankings/{id}/login:
     post:
-      tags: 
+      tags:
         - rankings
       description: 審査員が採点のためにログイン
       operationId: JudgeLogin
@@ -157,17 +219,17 @@ paths:
           schema:
             type: integer
       responses:
-        '200':
+        "200":
           description: 審査員ログイン成功
           content:
             application/json:
-              schema: 
+              schema:
                 type: object
-                items: 
+                items:
                   $ref: "#/components/schemas/Ranking"
   /my-rankings:
     get:
-      tags: 
+      tags:
         - myRankings
       description: ログインしているユーザーのランキング情報
       operationId: getMyRankings
@@ -184,6 +246,7 @@ paths:
                   - id: 1
                     user: { id: 1, name: John Doe }
                     title: Hogeランキング
+                    createdAt: "2023-01-14 12:00:22"
                     rankingItems:
                       - id: 1
                         name: 富士山
@@ -205,7 +268,7 @@ paths:
                 $ref: "#/components/schemas/Error"
   /my-rankings/{rankingId}:
     get:
-      tags: 
+      tags:
         - myRankings
       description: ログインしているユーザーのランキング情報
       operationId: getMyRanking
@@ -222,6 +285,7 @@ paths:
                   - id: 1
                     user: { id: 1, name: John Doe }
                     title: Hogeランキング
+                    createdAt: "2023-01-14 12:00:22"
                     rankingItems:
                       - id: 1
                         name: 富士山
@@ -270,7 +334,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/UpdateUser'
+            $ref: "#/components/schemas/UpdateUser"
   responses:
     UnauthorizedError:
       description: Unauthorized Error
@@ -293,14 +357,14 @@ components:
     UpdateUser:
       description: 更新する際にリクエストに含めるユーザー情報
       allOf:
-        - $ref: '#/components/schemas/User'
+        - $ref: "#/components/schemas/User"
     Ranking:
       description: レスポンスで返すランキング情報
       type: object
       allOf:
         - $ref: "#/components/schemas/RankingBase"
         - $ref: "#/components/schemas/RankingItems"
-    MyRanking: 
+    MyRanking:
       description: 審査、管理をする人がみるランキング情報
       type: object
       allOf:
@@ -324,26 +388,29 @@ components:
           example: hogehogeranking
         deadline:
           type: string
-          example: '2023-12-29'
+          example: "2023-12-29"
+        createdAt:
+          type: string
+          example: "2023-01-14 12:00:22"
     RankingForAdmin:
       description: 審査員、管理者には必要なランキングの情報
       type: object
       properties:
-        score_maximum:
+        scoreMaximum:
           type: integer
           example: 100
-        judge_comments:
+        judgeComments:
           type: array
           items:
             $ref: "#/components/schemas/JudgeComment"
-    RankingItems: 
+    RankingItems:
       description: 一般ユーザー向けランキング内の投票対象全ての情報
-      type: array 
+      type: array
       items:
         $ref: "#/components/schemas/RankingItem"
-    RankingItemsForAdmin: 
+    RankingItemsForAdmin:
       description: 一般ユーザー向けランキング内の投票対象全ての情報
-      type: array 
+      type: array
       items:
         $ref: "#/components/schemas/RankingItem"
     RankingItem:
@@ -371,7 +438,7 @@ components:
       allOf:
         - $ref: "#/components/schemas/RankingItem"
         - $ref: "#/components/schemas/Score"
-    Scores: 
+    Scores:
       description: 対象に対してつけられたすべての点数
       type: array
       items:
