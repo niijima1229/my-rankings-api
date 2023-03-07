@@ -8,6 +8,9 @@ use App\Http\Controllers\RankingController;
 
 Route::prefix('rankings')->controller(RankingController::class)->group(function() {
 	Route::get('/', 'index');
+	Route::middleware('auth')->group(function() {
+		Route::get('/my-rankings', 'myRankings');
+	});
 });
 
 Route::post('login', [AuthController::class, 'login'])->name('login');
